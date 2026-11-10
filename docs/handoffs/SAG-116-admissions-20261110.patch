@@ -1,0 +1,311 @@
+diff --git a/website/src/pages/Admissions.tsx b/website/src/pages/Admissions.tsx
+index 7715517..8bb715c 100644
+--- a/website/src/pages/Admissions.tsx
++++ b/website/src/pages/Admissions.tsx
+@@ -1,3 +1,4 @@
++import { useNavigate } from 'react-router-dom'
+ import { useRef, useState, useEffect } from 'react'
+ import gsap from 'gsap'
+ import { ScrollTrigger } from 'gsap/ScrollTrigger'
+@@ -17,62 +18,98 @@ gsap.registerPlugin(ScrollTrigger)
+ /* ------------------------------------------------------------------ */
+ 
+ const timelineSteps = [
+-  { title: 'Applications Open', description: 'The application portal opens for the Class of 2028. Begin your journey.', date: 'Sep 1, 2026' },
+-  { title: 'Early Decision Deadline', description: 'Submit by this date for priority consideration and earlier notification.', date: 'Nov 15, 2026' },
+-  { title: 'Regular Decision Deadline', description: 'Final deadline for all regular decision applications.', date: 'Jan 15, 2027' },
+-  { title: 'Decision Notifications', description: 'All applicants receive their admissions decision via email.', date: 'Mar 31, 2027' },
+-  { title: 'Enrollment Deadline', description: 'Confirm your place in the cohort with your enrollment deposit.', date: 'May 1, 2027' },
+-  { title: 'Program Begins', description: 'Move in, meet your cohort, and begin the intensive master\'s program.', date: 'Sep 7, 2027' },
++  {
++    "title": "Register interest",
++    "description": "Explore the planned Spring 2027 cohort and tell us your learning interests.",
++    "date": "To be confirmed"
++  },
++  {
++    "title": "Program details",
++    "description": "Review the confirmed learning tracks, delivery format and requirements.",
++    "date": "To be confirmed"
++  },
++  {
++    "title": "Applications",
++    "description": "A formal application process will be published when admissions are confirmed.",
++    "date": "To be confirmed"
++  },
++  {
++    "title": "Review",
++    "description": "The review process and decision timetable will be published with admissions details.",
++    "date": "To be confirmed"
++  },
++  {
++    "title": "Enrollment",
++    "description": "Registration of interest does not reserve a place or require a deposit.",
++    "date": "To be confirmed"
++  },
++  {
++    "title": "Cohort begins",
++    "description": "Spring 2027 is a planning period, not a confirmed start date.",
++    "date": "To be confirmed"
++  }
+ ]
+ 
+ const requiredItems = [
+-  "Bachelor's degree in CS, Engineering, Mathematics, or related field",
+-  "Strong programming background (Python, C++, or Java)",
+-  "Linear algebra, probability, and statistics",
+-  "Two letters of recommendation",
+-  "Statement of purpose (500-1000 words)",
+-  "Coding sample or research paper",
++  "Final entry requirements are being prepared",
++  "Program-specific documents will be published with admissions",
++  "Registering interest is not an application"
+ ]
+ 
+ const preferredItems = [
+-  "Industry experience in ML/AI (1+ years)",
+-  "Publications in ML/AI venues",
+-  "Open source contributions",
+-  "Graduate-level coursework in ML",
++  "Explore your learning interests",
++  "Review confirmed delivery and credential details",
++  "Decide whether the published program suits your goals"
+ ]
+ 
+ const faqData = [
+   {
+-    q: "What makes Agentic University different from a traditional CS master's program?",
+-    a: "Our curriculum is exclusively focused on autonomous agent systems. Every course, lab, and project builds expertise in designing, deploying, and governing intelligent agents. You'll graduate with both deep theoretical knowledge and hands-on experience building production agent systems.",
++    "q": "Are applications open?",
++    "a": "This preview supports an expression of interest. A confirmed admissions opening date has not been published."
+   },
+   {
+-    q: "Is the program in-person or remote?",
+-    a: "The Master of Agent Engineering is a full-time, residential program. The collaborative nature of agent research and the hands-on lab work require physical presence. However, select seminars and guest lectures are accessible to remote auditors.",
++    "q": "When will the first cohort start?",
++    "a": "Spring 2027 is the planning period. The start date, timetable and cohort size are subject to confirmation."
+   },
+   {
+-    q: "What career outcomes can I expect?",
+-    a: "Our graduates join top AI research labs (OpenAI, DeepMind, Anthropic), founding agent startups (raised $500M+ collectively), and Fortune 500 AI divisions. 98% of graduates secure their top-choice role within 3 months.",
++    "q": "Is this an accredited degree?",
++    "a": "No accredited degree or professional recognition is represented by this preview. Program and credential details must be confirmed before you apply."
+   },
+   {
+-    q: "Do I need prior research experience?",
+-    a: "Research experience is preferred but not required. We value diverse backgrounds — industry engineers, self-taught builders, and researchers from adjacent fields have all thrived in our program.",
++    "q": "Is learning online or on campus?",
++    "a": "The delivery format has not been confirmed. Review the published program details before making travel or study commitments."
+   },
+   {
+-    q: "What is the cohort size?",
+-    a: "We intentionally keep cohorts small (40 students) to ensure personalized mentorship and deep collaboration. Each student receives individual attention from faculty and industry advisors.",
++    "q": "What will it cost?",
++    "a": "Tuition, deposits, scholarships and financial aid have not been confirmed. This page does not request a payment."
+   },
+   {
+-    q: "Can I visit campus before applying?",
+-    a: "Absolutely. We offer monthly campus tours and virtual information sessions. Schedule a visit through our Campus page or attend one of our quarterly open house events.",
++    "q": "Does registering interest guarantee admission or employment?",
++    "a": "No. It is not an application, an admission decision, an enrollment or a job-placement guarantee."
+   },
++  {
++    "q": "What happens after I register interest?",
++    "a": "The form reports whether your registration was received. It does not promise a confirmation email. Contact is subject to the consent you provide."
++  }
+ ]
+ 
+ const aidTypes = [
+-  { title: "Merit Scholarships", desc: "Up to full tuition coverage based on exceptional qualifications" },
+-  { title: "Research Assistantships", desc: "Stipend + tuition remission for qualifying students" },
+-  { title: "Industry Fellowships", desc: "Partner-sponsored full scholarships with summer internships" },
+-  { title: "Federal Aid", desc: "Eligible for federal student loans and work-study" },
++  {
++    "title": "Fees",
++    "desc": "To be confirmed with program details"
++  },
++  {
++    "title": "Funding",
++    "desc": "No scholarship or financial-aid offer is confirmed"
++  },
++  {
++    "title": "Payments",
++    "desc": "This page does not collect payments or deposits"
++  },
++  {
++    "title": "Enrollment",
++    "desc": "Interest registration does not reserve a place"
++  }
+ ]
+ 
+ /* ------------------------------------------------------------------ */
+@@ -80,6 +117,7 @@ const aidTypes = [
+ /* ------------------------------------------------------------------ */
+ 
+ export default function Admissions() {
++  const navigate = useNavigate()
+   const containerRef = useRef<HTMLDivElement>(null)
+   const [faqValue, setFaqValue] = useState<string>("")
+ 
+@@ -229,7 +267,7 @@ export default function Admissions() {
+               color: '#f9f6f0',
+             }}
+           >
+-            Join the Next Generation of Agent Architects
++            Explore the Planned First Cohort
+           </h1>
+           <p
+             className="adm-header-body max-w-[540px] mb-8"
+@@ -240,7 +278,7 @@ export default function Admissions() {
+               color: 'rgba(249, 246, 240, 0.5)',
+             }}
+           >
+-            We seek exceptional engineers, researchers, and visionaries ready to shape the future of autonomous AI.
++            Explore the learning areas and register interest while the Spring 2027 schedule and admissions details are confirmed.
+           </p>
+           <div className="adm-header-cta flex flex-wrap items-center gap-4">
+             <a
+@@ -262,7 +300,7 @@ export default function Admissions() {
+                 e.currentTarget.style.boxShadow = 'none'
+               }}
+             >
+-              Start Application
++              Register Interest
+               <ChevronRight size={16} />
+             </a>
+           </div>
+@@ -294,7 +332,7 @@ export default function Admissions() {
+               color: '#f9f6f0',
+             }}
+           >
+-            Your Path to Admission
++            Your Next Steps
+           </h2>
+ 
+           {/* Desktop: horizontal timeline */}
+@@ -461,11 +499,11 @@ export default function Admissions() {
+               color: '#f9f6f0',
+             }}
+           >
+-            What We Look For
++            Before You Apply
+           </h2>
+ 
+           <div className="grid md:grid-cols-2 gap-12">
+-            {/* Required */}
++            {/* Requirements planning */}
+             <div className="adm-req-left">
+               <h3
+                 className="text-xl font-semibold mb-6 pb-4"
+@@ -475,7 +513,7 @@ export default function Admissions() {
+                   borderBottom: '1px solid rgba(245, 176, 65, 0.15)',
+                 }}
+               >
+-                Required
++                Requirements planning
+               </h3>
+               <ul className="flex flex-col">
+                 {requiredItems.map((item, i) => (
+@@ -499,7 +537,7 @@ export default function Admissions() {
+               </ul>
+             </div>
+ 
+-            {/* Preferred */}
++            {/* Prepare your questions */}
+             <div className="adm-req-right">
+               <h3
+                 className="text-xl font-semibold mb-6 pb-4"
+@@ -509,7 +547,7 @@ export default function Admissions() {
+                   borderBottom: '1px solid rgba(245, 176, 65, 0.15)',
+                 }}
+               >
+-                Preferred
++                Prepare your questions
+               </h3>
+               <ul className="flex flex-col">
+                 {preferredItems.map((item, i) => (
+@@ -561,7 +599,7 @@ export default function Admissions() {
+               color: '#f9f6f0',
+             }}
+           >
+-            Investment in Your Future
++            Fees and Funding
+           </h2>
+ 
+           {/* Tuition Card */}
+@@ -582,7 +620,7 @@ export default function Admissions() {
+                 color: '#f5b041',
+               }}
+             >
+-              $125,000
++              To be confirmed
+             </p>
+             <p
+               className="text-xs uppercase tracking-[0.1em] mb-8"
+@@ -591,7 +629,7 @@ export default function Admissions() {
+                 color: 'rgba(249, 246, 240, 0.5)',
+               }}
+             >
+-              Total Program Cost
++              No confirmed tuition or payment request
+             </p>
+             <div
+               className="w-full h-px mb-8"
+@@ -599,10 +637,10 @@ export default function Admissions() {
+             />
+             <div className="grid sm:grid-cols-2 gap-4 text-left">
+               {[
+-                'Full tuition for all four programs',
+-                'Unlimited compute cluster access',
+-                'Research materials and conference travel',
+-                'Mentorship from industry leaders',
++                'Program scope to be confirmed',
++                'Learning resources to be confirmed',
++                'Included costs to be confirmed',
++                'Support arrangements to be confirmed',
+               ].map((inc, i) => (
+                 <div key={i} className="flex items-center gap-3">
+                   <Check size={16} style={{ color: '#f5b041' }} />
+@@ -752,7 +790,7 @@ export default function Admissions() {
+               color: '#f9f6f0',
+             }}
+           >
+-            Ready to Apply?
++            Interested in Learning More?
+           </h2>
+           <p
+             className="adm-cta-el mb-10"
+@@ -763,10 +801,11 @@ export default function Admissions() {
+               color: 'rgba(249, 246, 240, 0.5)',
+             }}
+           >
+-            Applications for the Class of 2028 open September 1, 2026.
++            Register interest in the planned Spring 2027 cohort. This is not an application, admission or enrollment.
+           </p>
+           <div className="adm-cta-el flex flex-wrap items-center justify-center gap-4">
+             <button
++              onClick={() => navigate('/apply')}
+               className="inline-flex items-center gap-2 px-8 py-4 text-sm font-medium uppercase tracking-[0.1em] transition-all duration-200"
+               style={{
+                 fontFamily: "'Space Grotesk', system-ui, sans-serif",
+@@ -783,10 +822,11 @@ export default function Admissions() {
+                 e.currentTarget.style.boxShadow = 'none'
+               }}
+             >
+-              Request Info
++              Register Interest
+               <ChevronRight size={16} />
+             </button>
+             <button
++              onClick={() => navigate('/programs')}
+               className="inline-flex items-center gap-2 px-8 py-4 text-sm font-medium uppercase tracking-[0.1em] transition-all duration-200"
+               style={{
+                 fontFamily: "'Space Grotesk', system-ui, sans-serif",
+@@ -801,7 +841,7 @@ export default function Admissions() {
+                 e.currentTarget.style.backgroundColor = 'transparent'
+               }}
+             >
+-              Apply Now
++              Explore Learning Areas
+               <ChevronRight size={16} />
+             </button>
+           </div>
