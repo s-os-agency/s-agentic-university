@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useRef, useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 
 const endpoint = 'https://nrjfbqgvigankejaajrt.supabase.co/rest/v1/university_interest';
@@ -9,32 +9,49 @@ export default function Apply() {
   const [form, setForm] = useState({ first_name: '', last_name: '', email: '', phone: '', area_of_interest: 'undecided', contact_consent: false, website: '' });
   const [state, setState] = useState<'idle' | 'sending' | 'received'>('idle');
   const [error, setError] = useState('');
+  const inFlight = useRef(false);
+  const [received, setReceived] = useState<{ first_name: string; email: string } | null>(null);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (form.website) return;
+    if (inFlight.current || form.website) return;
     setError('');
+    const payload = {
+      semester: 'spring_2027',
+      first_name: form.first_name.trim(), last_name: form.last_name.trim(),
+      email: form.email.trim().toLowerCase(), phone: form.phone.trim() || null,
+      area_of_interest: form.area_of_interest, contact_consent: form.contact_consent,
+    };
+    if (!payload.first_name || !payload.last_name || !payload.contact_consent ||
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) {
+      setError('Enter your name and email, and agree to be contacted before submitting.');
+      return;
+    }
+    inFlight.current = true;
     setState('sending');
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 20_000);
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { apikey: publicKey, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
-        body: JSON.stringify({
-          semester: 'spring_2027', first_name: form.first_name.trim(), last_name: form.last_name.trim(),
-          email: form.email.trim().toLowerCase(), phone: form.phone.trim() || null,
-          area_of_interest: form.area_of_interest, contact_consent: form.contact_consent,
-        }),
+        body: JSON.stringify(payload),
+        signal: controller.signal,
       });
       if (response.status === 409) {
-        setError('This email is already registered for the Spring 2027 interest list.');
+        setError('This email is already on the Spring 2027 interest list. This submission did not change the existing registration.');
         setState('idle');
         return;
       }
       if (!response.ok) throw new Error('Unable to register interest.');
+      setReceived({ first_name: payload.first_name, email: payload.email });
       setState('received');
     } catch {
-      setError('We could not receive your details. Please try again later.');
+      setError('We could not confirm receipt of your details. Your entries are still here. If the request was received, a retry may report that the email is already registered.');
       setState('idle');
+    } finally {
+      window.clearTimeout(timeout);
+      inFlight.current = false;
     }
   }
 
@@ -47,13 +64,14 @@ export default function Apply() {
         <p className="mt-12 text-xs font-semibold uppercase tracking-[0.2em] text-[#f5b041]">Planning for Spring 2027</p>
         <h1 className="mt-3 text-4xl font-semibold md:text-6xl" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>Register your interest</h1>
         <p className="mt-5 leading-7 text-white/70">We are planning a first cohort for the next semester. Leave your details and we can contact you when the schedule, learning tracks, and admissions process are confirmed. This is an expression of interest, not an application or an offer of admission.</p>
-        {state === 'received' ? (
+        {state === 'received' && received ? (
           <div role="status" className="mt-10 rounded-xl border border-[#f5b041]/40 bg-[#121250] p-8">
             <h2 className="text-2xl text-[#f5b041]">Your interest has been received.</h2>
-            <p className="mt-3 leading-7 text-white/70">Thank you, {form.first_name}. We will contact you at {form.email} when we have confirmed details for the planned Spring 2027 cohort.</p>
+            <p className="mt-3 leading-7 text-white/70">Thank you, {received.first_name}. We will contact you at {received.email} when we have confirmed details for the planned Spring 2027 cohort.</p>
           </div>
         ) : (
-          <form onSubmit={submit} className="mt-10 space-y-5 rounded-xl border border-white/10 bg-[#121250]/40 p-6 md:p-10">
+          <form onSubmit={submit} aria-busy={state === 'sending'} className="mt-10 space-y-5 rounded-xl border border-white/10 bg-[#121250]/40 p-6 md:p-10">
+            <fieldset disabled={state === 'sending'} className="space-y-5">
             <div className="grid gap-5 sm:grid-cols-2">
               <div><label htmlFor="first_name" className={label}>First name *</label><input id="first_name" className={input} required maxLength={100} autoComplete="given-name" value={form.first_name} onChange={e => setForm({ ...form, first_name: e.target.value })} /></div>
               <div><label htmlFor="last_name" className={label}>Last name *</label><input id="last_name" className={input} required maxLength={100} autoComplete="family-name" value={form.last_name} onChange={e => setForm({ ...form, last_name: e.target.value })} /></div>
@@ -66,6 +84,7 @@ export default function Apply() {
             {error && <p role="alert" className="text-[#ffb6a8]">{error}</p>}
             <button type="submit" disabled={state === 'sending'} className="rounded bg-[#f5b041] px-7 py-3 font-semibold text-[#080828] disabled:opacity-50">{state === 'sending' ? 'Sending…' : 'Register interest'}</button>
             <p className="text-xs leading-5 text-white/50">Your details are stored for this interest list. The semester and programs are subject to confirmation.</p>
+            </fieldset>
           </form>
         )}
       </div>
