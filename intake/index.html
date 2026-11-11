@@ -46,20 +46,33 @@
   </main>
   <script>
     const form=document.getElementById('form'),error=document.getElementById('error'),button=document.getElementById('send');
+    let inFlight=false;
     form.addEventListener('submit',async event=>{
       event.preventDefault();
+      if(inFlight)return;
       const fields=new FormData(form);if(fields.get('website'))return;
-      error.classList.add('hidden');button.disabled=true;button.textContent='Sending…';
-      const email=String(fields.get('email')).trim().toLowerCase();
-      const data={semester:'spring_2027',first_name:String(fields.get('first_name')).trim(),last_name:String(fields.get('last_name')).trim(),email,phone:String(fields.get('phone')).trim()||null,area_of_interest:fields.get('area_of_interest'),contact_consent:fields.get('contact_consent')==='on'};
+      const data={semester:'spring_2027',first_name:String(fields.get('first_name')||'').trim(),last_name:String(fields.get('last_name')||'').trim(),email:String(fields.get('email')||'').trim().toLowerCase(),phone:String(fields.get('phone')||'').trim()||null,area_of_interest:fields.get('area_of_interest'),contact_consent:fields.get('contact_consent')==='on'};
+      if(!data.first_name||!data.last_name||!data.contact_consent||!form.checkValidity()){
+        error.textContent='Enter your name and email, and agree to be contacted before submitting.';error.classList.remove('hidden');return;
+      }
+      inFlight=true;error.classList.add('hidden');
+      const controls=Array.from(form.elements),disabled=controls.map(control=>control.disabled);
+      controls.forEach(control=>control.disabled=true);form.setAttribute('aria-busy','true');button.textContent='Sending…';
+      const controller=new AbortController(),timeout=window.setTimeout(()=>controller.abort(),20000);
       try{
-        const response=await fetch('https://nrjfbqgvigankejaajrt.supabase.co/rest/v1/university_interest',{method:'POST',headers:{apikey:'sb_publishable_s0jC_e_lkdV0GcpWekSrUA_8FuSGKiP','Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify(data)});
-        if(response.status===409)throw new Error('This email is already registered for the Spring 2027 interest list.');
-        if(!response.ok)throw new Error('We could not receive your details. Please try again later.');
+        const response=await fetch('https://nrjfbqgvigankejaajrt.supabase.co/rest/v1/university_interest',{method:'POST',headers:{apikey:'sb_publishable_s0jC_e_lkdV0GcpWekSrUA_8FuSGKiP','Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify(data),signal:controller.signal});
+        if(response.status===409){
+          error.textContent='This email is already on the Spring 2027 interest list. This submission did not change the existing registration.';error.classList.remove('hidden');return;
+        }
+        if(!response.ok)throw new Error('Receipt not confirmed.');
         form.classList.add('hidden');
-        const success=document.getElementById('success');success.textContent='Your interest has been received. We will contact you at '+email+' when the Spring 2027 plan is confirmed.';success.classList.remove('hidden');
-      }catch(e){error.textContent=e.message;error.classList.remove('hidden')}
-      finally{button.disabled=false;button.textContent='Register interest'}
+        const success=document.getElementById('success');success.textContent='Your interest has been received. We will contact you at '+data.email+' when the Spring 2027 plan is confirmed.';success.classList.remove('hidden');
+      }catch{
+        error.textContent='We could not confirm receipt of your details. Your entries are still here. If the request was received, a retry may report that the email is already registered.';error.classList.remove('hidden');
+      }finally{
+        window.clearTimeout(timeout);controls.forEach((control,index)=>control.disabled=disabled[index]);
+        form.setAttribute('aria-busy','false');button.textContent='Register interest';inFlight=false;
+      }
     });
   </script>
 </body>
