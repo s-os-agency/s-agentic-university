@@ -52,11 +52,11 @@ npm install
 npm run ci
 ```
 
-CI runs strict TypeScript checking, generator tests, and a production build.
+CI checks TypeScript and builds the runtime.
 
 ## Runtime truth
 
-This repository contains a typed, testable material-generation core. Production persistence, real Passport signature middleware, authenticated source ingestion, and deployment infrastructure remain separate integration steps and must not be represented as complete.
+This repository contains a typed material-generation core. Production persistence, real Passport signature middleware, authenticated source ingestion, and deployment infrastructure remain separate integration steps and must not be represented as complete.
 
 See [UNIVERSITY_RUNTIME_CYCLE.md](./UNIVERSITY_RUNTIME_CYCLE.md) for the education and certification gate.
 
