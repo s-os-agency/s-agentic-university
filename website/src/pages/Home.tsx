@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { motion, useReducedMotion } from 'framer-motion'
 import { interestUrl } from '../interest'
 
 const areas = [
@@ -8,9 +9,10 @@ const areas = [
 ]
 
 export default function Home() {
+  const reducedMotion = useReducedMotion()
   return <>
     <section className="relative min-h-[80vh] overflow-hidden bg-[#080828] px-6 pb-20 pt-40 text-[#f9f6f0]">
-      <div className="pointer-events-none absolute -right-24 top-12 h-[420px] w-[420px] rounded-full border border-[#f5b041]/20 bg-[radial-gradient(circle,rgba(245,176,65,.13),transparent_70%)]" />
+      <motion.div aria-hidden="true" className="pointer-events-none absolute -right-24 top-12 h-[420px] w-[420px] rounded-full border border-[#f5b041]/20 bg-[radial-gradient(circle,rgba(245,176,65,.13),transparent_70%)]" animate={reducedMotion ? undefined : { scale: [1, 1.12, 1], opacity: [0.5, 1, 0.5] }} transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }} />
       <div className="relative mx-auto max-w-6xl">
         <p className="mb-5 text-xs font-semibold uppercase tracking-[.22em] text-[#f5b041]">S/Agentic University · In development</p>
         <h1 className="max-w-4xl text-6xl leading-tight md:text-8xl">Learn to build agents with purpose.</h1>
