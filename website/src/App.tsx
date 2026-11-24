@@ -9,6 +9,7 @@ import Campus from './pages/Campus'
 import Admissions from './pages/Admissions'
 import About from './pages/About'
 import Apply from './pages/Apply'
+import Admin from './pages/Admin'
 import NotFound from './pages/NotFound'
 
 const pageVariants = {
@@ -49,6 +50,7 @@ export default function App() {
         <Route path="/admissions" element={<Layout><PageWrapper><Admissions /></PageWrapper></Layout>} />
         <Route path="/about" element={<Layout><PageWrapper><About /></PageWrapper></Layout>} />
         <Route path="/apply" element={<Layout><PageWrapper><Apply /></PageWrapper></Layout>} />
+        <Route path="/admin" element={<Layout><PageWrapper><Admin /></PageWrapper></Layout>} />
         <Route path="*" element={<Layout><PageWrapper><NotFound /></PageWrapper></Layout>} />
       </Routes>
     </AnimatePresence>
