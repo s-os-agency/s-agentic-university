@@ -20,6 +20,7 @@ jobs:
   website:
     name: Website type and production build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     defaults:
       run:
         working-directory: website
@@ -30,6 +31,6 @@ jobs:
         node-version: 22
         cache: npm
         cache-dependency-path: website/package-lock.json
-    - run: npm ci --legacy-peer-deps --ignore-scripts --no-audit --no-fund
+    - run: npm ci --legacy-peer-deps --ignore-scripts --no-audit --no-fund --fetch-retries=0 --fetch-timeout=15000
     - run: npm run check --ignore-scripts
     - run: npm run build --ignore-scripts
