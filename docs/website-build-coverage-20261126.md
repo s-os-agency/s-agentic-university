@@ -1,0 +1,9 @@
+# University website build coverage — 26 November 2026
+
+The existing CI verify job checks and builds the repository-root learning runtime. It does not compile the website, its tRPC API bundle, or the interest form. The additional website job uses the committed website lockfile, Node 22, disabled install lifecycle scripts, and the same type/build commands already completed on Manus. It runs no software test suites and adds no deployment step.
+
+For prior head 80464f98a96c8f3c69703839fca0421026af6e78, root CI run 45878866994 succeeded. Cloudflare Pages check 140112851301 reported deployment 22eeb13d-ef9e-4e6c-98a8-7709d06f8fc3 successful, but its returned preview URL https://22eeb13d.s-council.pages.dev returned HTTP 404 with an empty body on 26 November at approximately 19:51 UTC. Provider deployment success is not website accessibility or original-publication release evidence. The Pages project name is s-council; no mapping to the original Kimi publication/backend has been established.
+
+Preserve the original destination https://hdbmlg6savxqe.kimi.page and its release ownership. Do not change Pages configuration, create another campus, apply the consent SQL to an unmatched database, or infer a durable registration from build success. The original publication/backend mapping and genuine interest confirmation with matching stored consent/time remain open.
+
+Evidence: https://github.com/s-os-agency/s-agentic-university/actions/runs/45878866994 ; https://github.com/s-os-agency/s-agentic-university/runs/140112851301 ; Composio log_QHHTOsKhgyTi (complete current-head provider receipts), log_S1OD6EhMb9dw (actual root job steps), log_3i294h1RYoRe (HTTP 404).
