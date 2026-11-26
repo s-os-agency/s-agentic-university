@@ -1,2 +1,2 @@
-// Single verified public interest form. This is separate from the Kimi preview.
-export const interestUrl = 'https://s-agentic-university-interest-2027.alex-008.chatgpt.site'
+// Use the same publication's interest form and authenticated API transport.
+export const interestUrl = '#/apply'

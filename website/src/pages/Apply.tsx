@@ -1,16 +1,16 @@
 import { useRef, useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
+import { TRPCClientError } from '@trpc/client';
+import { trpc } from '@/providers/trpc';
 
-const endpoint = 'https://nrjfbqgvigankejaajrt.supabase.co/rest/v1/university_interest';
-// Public key; database row security permits inserts but not reading registrations.
-const publicKey = 'sb_publishable_s0jC_e_lkdV0GcpWekSrUA_8FuSGKiP';
 
 export default function Apply() {
+  const submitInterest = trpc.admissions.submit.useMutation();
   const [form, setForm] = useState({ first_name: '', last_name: '', email: '', phone: '', area_of_interest: 'undecided', contact_consent: false, website: '' });
   const [state, setState] = useState<'idle' | 'sending' | 'received'>('idle');
   const [error, setError] = useState('');
   const inFlight = useRef(false);
-  const [received, setReceived] = useState<{ first_name: string; email: string } | null>(null);
+  const [received, setReceived] = useState<{ first_name: string; email: string; id: number } | null>(null);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -29,28 +29,32 @@ export default function Apply() {
     }
     inFlight.current = true;
     setState('sending');
-    const controller = new AbortController();
-    const timeout = window.setTimeout(() => controller.abort(), 20_000);
+    let timeout: number | undefined;
     try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { apikey: publicKey, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
-        body: JSON.stringify(payload),
-        signal: controller.signal,
-      });
-      if (response.status === 409) {
-        setError('This email is already on the Spring 2027 interest list. This submission did not change the existing registration.');
-        setState('idle');
-        return;
-      }
-      if (!response.ok) throw new Error('Unable to register interest.');
-      setReceived({ first_name: payload.first_name, email: payload.email });
+      const response = await Promise.race([
+        submitInterest.mutateAsync({
+          firstName: payload.first_name,
+          lastName: payload.last_name,
+          email: payload.email,
+          phone: payload.phone ?? undefined,
+          areaOfInterest: payload.area_of_interest as 'agent_engineering' | 'agent_leadership' | 'research' | 'undecided',
+          contactConsent: true,
+        }),
+        new Promise<never>((_, reject) => {
+          timeout = window.setTimeout(() => reject(new Error('Receipt not confirmed in time.')), 20_000);
+        }),
+      ]);
+      setReceived({ first_name: payload.first_name, email: payload.email, id: response.id });
       setState('received');
-    } catch {
-      setError('We could not confirm receipt of your details. Your entries are still here. If the request was received, a retry may report that the email is already registered.');
+    } catch (error) {
+      if (error instanceof TRPCClientError && error.data?.code === 'CONFLICT') {
+        setError('This email is already on the interest list for this cohort. This submission did not change the existing registration.');
+      } else {
+        setError('We could not confirm receipt of your details. Your entries are still here. The request may still be received; a retry may report that the email is already registered.');
+      }
       setState('idle');
     } finally {
-      window.clearTimeout(timeout);
+      if (timeout !== undefined) window.clearTimeout(timeout);
       inFlight.current = false;
     }
   }
@@ -67,6 +71,7 @@ export default function Apply() {
         {state === 'received' && received ? (
           <div role="status" className="mt-10 rounded-xl border border-[#f5b041]/40 bg-[#121250] p-8">
             <h2 className="text-2xl text-[#f5b041]">Your interest has been received.</h2>
+            <p className="mt-3 text-sm text-white/60">Reference {received.id}</p>
             <p className="mt-3 leading-7 text-white/70">Thank you, {received.first_name}. We will contact you at {received.email} when we have confirmed details for the planned Spring 2027 cohort.</p>
           </div>
         ) : (

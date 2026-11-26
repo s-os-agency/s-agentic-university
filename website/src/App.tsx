@@ -6,6 +6,7 @@ import Programs from './pages/Programs'
 import Admissions from './pages/Admissions'
 import About from './pages/About'
 import Apply from './pages/Apply'
+import Admin from './pages/Admin'
 import NotFound from './pages/NotFound'
 
 export default function App() {
@@ -17,6 +18,7 @@ export default function App() {
     <Route path="/admissions" element={<Admissions />} />
     <Route path="/about" element={<About />} />
     <Route path="/apply" element={<Apply />} />
+    <Route path="/admin" element={<Admin />} />
     <Route path="/faculty" element={<Navigate to="/about" replace />} />
     <Route path="/research" element={<Navigate to="/programs" replace />} />
     <Route path="/campus" element={<Navigate to="/about" replace />} />
