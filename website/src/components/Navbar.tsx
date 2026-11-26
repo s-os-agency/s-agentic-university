@@ -1,12 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { interestUrl } from '../interest';
 
 const navLinks = [
-  { label: 'Programs', path: '/programs' },
-  { label: 'Faculty', path: '/faculty' },
-  { label: 'Research', path: '/research' },
-  { label: 'Campus', path: '/campus' },
-  { label: 'Admissions', path: '/admissions' },
+  { label: 'Learning areas', path: '/programs' },
+  { label: 'Interest', path: '/admissions' },
   { label: 'About', path: '/about' },
 ];
 
@@ -39,7 +37,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav
+      <nav aria-label="Main navigation"
         className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
         style={{
           backgroundColor: scrolled ? 'rgba(8, 8, 40, 0.9)' : 'rgba(8, 8, 40, 0.6)',
@@ -53,7 +51,7 @@ export default function Navbar() {
             <span
               className="font-sans font-bold text-[#f9f6f0] tracking-[0.1em] text-sm md:text-base"
             >
-              AGENTIC
+              S/AGENTIC
             </span>
             <span
               className="font-sans font-medium text-[rgba(249,246,240,0.5)] tracking-[0.14em] text-[0.6rem]"
@@ -74,6 +72,7 @@ export default function Navbar() {
                 <span className="absolute left-0 bottom-[-4px] h-[1px] w-0 bg-[#f5b041] transition-all duration-300 group-hover:w-full" />
               </Link>
             ))}
+            <a href={interestUrl} className="rounded bg-[#f5b041] px-4 py-2 text-sm font-semibold text-[#080828]">Register interest ↗</a>
           </div>
 
           {/* Mobile Hamburger */}
@@ -81,6 +80,8 @@ export default function Navbar() {
             className="md:hidden flex flex-col gap-[5px] p-2"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Toggle menu"
+            aria-expanded={menuOpen}
+            aria-controls="mobile-navigation"
           >
             <span
               className="block w-6 h-[2px] bg-[#f9f6f0] transition-all duration-300"
@@ -106,6 +107,8 @@ export default function Navbar() {
 
       {/* Mobile Full-Screen Menu */}
       <div
+        id="mobile-navigation"
+        inert={!menuOpen}
         className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-8 md:hidden transition-all duration-500"
         style={{
           backgroundColor: 'rgba(8, 8, 40, 0.98)',
@@ -129,6 +132,7 @@ export default function Navbar() {
             {link.label}
           </Link>
         ))}
+        <a href={interestUrl} className="rounded bg-[#f5b041] px-6 py-3 font-semibold text-[#080828]">Register interest ↗</a>
       </div>
     </>
   );

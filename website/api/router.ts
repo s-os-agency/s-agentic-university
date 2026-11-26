@@ -42,9 +42,12 @@ export const appRouter = createRouter({
 
   admissions: createRouter({
     submit: publicQuery.input(applyInput).mutation(async ({ input }) => {
-      const { contactConsent: _consent, ...data } = input;
       try {
-        const row = await createApplication({ ...data, semester: "spring_2027" });
+        const row = await createApplication({
+          ...input,
+          contactConsentAt: new Date(),
+          semester: "spring_2027",
+        });
         return { ok: true as const, id: Number(row.id) };
       } catch (err) {
         const chain =

@@ -9,13 +9,18 @@ export async function createApplication(
   >,
 ) {
   const db = getDb();
-  await db.insert(applications).values(data);
+  const [inserted] = await db.insert(applications).values(data).$returningId();
+  if (!inserted) {
+    throw new Error("Application insert did not return a saved record ID.");
+  }
   const [row] = await db
     .select()
     .from(applications)
-    .where(eq(applications.email, data.email))
-    .orderBy(desc(applications.createdAt))
+    .where(eq(applications.id, inserted.id))
     .limit(1);
+  if (!row) {
+    throw new Error("Saved application could not be retrieved.");
+  }
   return row;
 }
 

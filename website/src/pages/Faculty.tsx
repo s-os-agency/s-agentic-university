@@ -4,7 +4,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, BookOpen, FlaskConical, Award } from 'lucide-react';
+import { ArrowRight, BookOpen } from 'lucide-react';
 import ParticleNetwork from '@/components/ParticleNetwork';
 
 gsap.registerPlugin(ScrollTrigger);

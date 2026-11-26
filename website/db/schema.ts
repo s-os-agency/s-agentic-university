@@ -1,5 +1,6 @@
 import {
   mysqlTable,
+  boolean,
   mysqlEnum,
   serial,
   varchar,
@@ -25,6 +26,9 @@ export const applications = mysqlTable(
       "undecided",
     ]).notNull(),
     motivation: text("motivation"),
+    // Null means no retained evidence for a legacy record. Never backfill consent.
+    contactConsent: boolean("contact_consent"),
+    contactConsentAt: timestamp("contact_consent_at"),
     status: mysqlEnum("status", ["interested", "accepted", "declined"])
       .notNull()
       .default("interested"),
